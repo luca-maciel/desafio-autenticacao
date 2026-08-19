@@ -1,694 +1,626 @@
-# 📱 Desafio de Autenticação --- Mobile
+# 📱 Desafio de Autenticação — Frontend
 
-Aplicativo mobile desenvolvido com **React Native + Expo + TypeScript**,
-responsável pela interface do fluxo completo de autenticação.
+Frontend mobile do desafio técnico de autenticação, desenvolvido com **React Native + Expo + TypeScript**.
 
-O aplicativo consome uma API RESTful desenvolvida em Node.js/Express.
+O aplicativo consome a API REST do backend e implementa os principais fluxos de autenticação:
 
-------------------------------------------------------------------------
+- cadastro com confirmação por código enviado por e-mail;
+- login;
+- armazenamento do JWT;
+- carregamento do usuário autenticado;
+- acesso à área principal;
+- recuperação de senha;
+- validação de código de recuperação;
+- redefinição de senha;
+- validações e tratamento de erros.
 
-## 📌 Funcionalidades
+---
 
--   Cadastro
--   Login
--   Armazenamento seguro do token
--   Autenticação persistente
--   Context API para controle de autenticação
--   Rota privada
--   Dashboard/Home
--   Logout
--   Recuperação de senha
--   Solicitação de código por e-mail
--   Validação do código
--   Redefinição de senha
--   Validação dos formulários
--   Tratamento de erros da API
+## 📚 Sumário
 
-------------------------------------------------------------------------
+- [1. Stack](#1--stack)
+- [2. Estrutura do projeto](#2--estrutura-do-projeto)
+- [3. Pré-requisitos](#3--pré-requisitos)
+- [4. Instalação do zero — Windows](#4--instalação-do-zero--windows)
+- [5. Instalação do zero — Linux](#5--instalação-do-zero--linux)
+- [6. Configuração do projeto](#6--configuração-do-projeto)
+- [7. Configuração da API](#7--configuração-da-api)
+- [8. Executando o aplicativo](#8--executando-o-aplicativo)
+- [9. Formas de execução](#9--formas-de-execução)
+- [10. Fluxos disponíveis](#10--fluxos-disponíveis)
+- [11. Variáveis de ambiente](#11--variáveis-de-ambiente)
+- [12. Problemas comuns](#12--problemas-comuns)
+- [13. Checklist de instalação](#13--checklist-de-instalação)
 
-# 🧱 Stack
+---
 
-  Tecnologia          Função
-  ------------------- -------------------------------------
-  React Native        Desenvolvimento mobile
-  Expo                Ambiente e ferramentas React Native
-  TypeScript          Tipagem estática
-  React Navigation    Navegação
-  Axios               Requisições HTTP
-  Expo Secure Store   Armazenamento seguro do token
-  Context API         Estado global de autenticação
+# 1. 🧱 Stack
 
-------------------------------------------------------------------------
+| Tecnologia | Utilização |
+|---|---|
+| React Native | Aplicativo mobile |
+| Expo | Runtime e ferramentas de desenvolvimento |
+| TypeScript | Tipagem estática |
+| React Navigation | Navegação entre telas |
+| Axios | Requisições HTTP |
+| Zod | Validação de dados |
+| Expo Secure Store | Armazenamento do token em ambiente nativo |
+| Context API | Estado global de autenticação |
 
-# 📁 Estrutura
+O projeto utiliza Expo. Para desenvolvimento com Expo, a documentação oficial recomenda Node.js LTS e suporta Windows e Linux. citeturn691599search0turn691599search6
 
-Uma estrutura aproximada:
+---
 
-``` text
-mobile/
+# 2. 📁 Estrutura do projeto
+
+A estrutura atual é aproximadamente:
+
+```text
+frontend/
+├── assets/
 ├── src/
 │   ├── context/
 │   │   └── AuthContext.tsx
 │   │
-│   ├── pages/
+│   ├── navigation/
+│   │   └── Routes.tsx
+│   │
+│   ├── schemas/
+│   │   ├── login.schema.ts
+│   │   └── password-recovery-schema.ts
+│   │
+│   ├── screens/
+│   │   ├── ForgotPasswordPage.tsx
+│   │   ├── HomePage.tsx
 │   │   ├── LoginPage.tsx
 │   │   ├── RegisterPage.tsx
-│   │   ├── HomePage.tsx
-│   │   ├── ForgotPasswordPage.tsx
+│   │   ├── ResetPasswordPage.tsx
 │   │   ├── VerifyCodePage.tsx
-│   │   └── ResetPasswordPage.tsx
+│   │   └── VerifyPageRegister.tsx
 │   │
 │   ├── services/
-│   │   ├── axios.ts
+│   │   ├── api.ts
+│   │   ├── auth.service.ts
 │   │   └── storage.ts
 │   │
-│   ├── types/
-│   │   └── RoutesTypes.ts
-│   │
-│   └── routes/
-│       └── Routes.tsx
+│   └── types/
+│       └── RoutesTypes.ts
 │
+├── .env.example
 ├── App.tsx
+├── app.json
 ├── package.json
-├── tsconfig.json
-└── README.md
+├── package-lock.json
+└── tsconfig.json
 ```
 
-Os nomes e a organização podem variar conforme a versão final do
-projeto.
+---
 
-------------------------------------------------------------------------
+# 3. 📋 Pré-requisitos
 
-# 🚀 Como executar
+Em uma máquina zerada, você precisa de:
 
-## 1. Pré-requisitos
+- **Node.js LTS**
+- **npm** (incluído com Node.js)
+- **Git**
+- **Expo Go**, caso use um celular físico
+- **Android Studio**, caso queira usar um emulador Android
+- Um editor de código, como VS Code
 
-Instale:
+Verifique:
 
--   Node.js
--   npm
--   Expo CLI (opcional)
--   Expo Go, caso utilize um dispositivo físico
--   Android Studio, caso utilize emulador Android
+```bash
+node --version
+npm --version
+git --version
+```
 
-Confira:
+No momento desta documentação, o site oficial do Node.js disponibiliza a linha **24.x como LTS**. Use uma versão LTS compatível com o projeto em vez de depender de uma versão Current. citeturn691599search4
 
-``` bash
+---
+
+# 4. 🪟 Instalação do zero — Windows
+
+## 4.1 Instalar o Node.js
+
+Baixe a versão LTS no site oficial:
+
+https://nodejs.org/
+
+Durante a instalação, mantenha as opções padrão.
+
+Depois, abra um novo **PowerShell**:
+
+```powershell
 node --version
 npm --version
 ```
 
-------------------------------------------------------------------------
+---
 
-## 2. Clonar o projeto
+## 4.2 Instalar o Git
 
-``` bash
-git clone <URL_DO_REPOSITORIO>
-cd mobile
+Baixe o Git:
+
+https://git-scm.com/download/win
+
+Depois:
+
+```powershell
+git --version
 ```
 
-------------------------------------------------------------------------
+---
 
-## 3. Instalar dependências
+## 4.3 Clonar o projeto
 
-``` bash
+```powershell
+git clone <URL_DO_REPOSITORIO>
+cd Desafio-autenticacao
+```
+
+Entre no frontend:
+
+```powershell
+cd frontend
+```
+
+---
+
+## 4.4 Instalar dependências
+
+```powershell
 npm install
 ```
 
-------------------------------------------------------------------------
+Não é necessário instalar o Expo CLI globalmente para executar este projeto. Use:
 
-# 🔌 Configuração da API
-
-O aplicativo precisa conseguir acessar a API.
-
-Durante o desenvolvimento, a API pode estar executando em:
-
-``` text
-http://localhost:8080
-```
-
-Porém, existe uma diferença importante:
-
-### Android Emulator
-
-Para um Android Emulator padrão, o computador normalmente é acessado
-através de:
-
-``` text
-http://10.0.2.2:8080
-```
-
-### Dispositivo físico
-
-Se estiver utilizando um celular conectado à mesma rede Wi-Fi do
-computador, utilize o IP local da máquina.
-
-Exemplo:
-
-``` text
-http://192.168.0.10:8080
-```
-
-O celular e o computador precisam estar na mesma rede.
-
-### ⚠️ Não utilize `localhost` no celular
-
-No dispositivo físico:
-
-``` text
-http://localhost:8080
-```
-
-aponta para o próprio celular, não para o computador onde a API está
-rodando.
-
-------------------------------------------------------------------------
-
-# ▶️ Executando o aplicativo
-
-Execute:
-
-``` bash
+```powershell
 npx expo start
 ```
 
-Depois escolha:
+---
 
-``` text
-Android
+# 5. 🐧 Instalação do zero — Linux
+
+## 5.1 Instalar Git
+
+### Ubuntu/Debian
+
+```bash
+sudo apt update
+sudo apt install git -y
 ```
 
-ou escaneie o QR Code utilizando o Expo Go.
+Verifique:
 
-Para limpar o cache:
-
-``` bash
-npx expo start -c
+```bash
+git --version
 ```
 
-------------------------------------------------------------------------
+---
 
-# 🧭 Navegação
+## 5.2 Instalar Node.js LTS
 
-O aplicativo utiliza React Navigation.
+Uma opção prática é utilizar o `nvm`.
 
-Fluxo principal:
+Instale:
 
-``` text
-Login
- ├── Register
- ├── Forgot Password
- │     └── Verify Code
- │            └── Reset Password
- │
- └── Home
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 ```
 
-------------------------------------------------------------------------
+Carregue o `nvm`:
 
-# 🔐 Contexto de autenticação
-
-O `AuthContext` controla o estado global de autenticação.
-
-O fluxo é:
-
-``` text
-App inicia
-   ↓
-AuthContext
-   ↓
-procura token armazenado
-   ↓
-existe token?
-  /       \
-não       sim
- |         |
-Login   consulta usuário
-           |
-        usuário válido
-           |
-          Home
+```bash
+source ~/.nvm/nvm.sh
 ```
 
-O contexto também mantém o usuário autenticado disponível para as telas.
+Instale a versão LTS 24:
 
-------------------------------------------------------------------------
-
-# 💾 Armazenamento do token
-
-O projeto utiliza um serviço de storage para armazenar o JWT.
-
-No mobile, é utilizado:
-
-``` text
-expo-secure-store
+```bash
+nvm install 24
+nvm use 24
 ```
 
-O objetivo é evitar armazenar o token em texto puro em uma solução
-inadequada.
+Verifique:
 
-O serviço possui operações equivalentes a:
-
-``` text
-saveToken()
-getToken()
-removeToken()
+```bash
+node --version
+npm --version
 ```
 
-------------------------------------------------------------------------
+O Node oficial também documenta a utilização do nvm no Linux. citeturn691599search4
 
-# 🌐 Comunicação com a API
+---
 
-As requisições são realizadas utilizando Axios.
+## 5.3 Clonar o projeto
 
-Exemplo:
-
-``` ts
-await axios.post(
-  "http://IP_DA_API:8080/auth/login",
-  {
-    email,
-    password,
-  }
-);
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd Desafio-autenticacao
+cd frontend
 ```
 
-Para requisições autenticadas, o token é enviado como:
+---
 
-``` http
-Authorization: Bearer SEU_TOKEN
-```
+## 5.4 Instalar dependências
 
-------------------------------------------------------------------------
-
-# 👤 Cadastro
-
-Tela:
-
-``` text
-RegisterPage
-```
-
-O usuário informa:
-
--   nome;
--   e-mail;
--   senha;
--   confirmação da senha.
-
-A aplicação valida os dados antes de enviar para a API.
-
-A API também valida os dados, pois o backend não deve confiar nas
-validações do frontend.
-
-------------------------------------------------------------------------
-
-# 🔑 Login
-
-Tela:
-
-``` text
-LoginPage
-```
-
-Fluxo:
-
-``` text
-e-mail + senha
-      ↓
-POST /auth/login
-      ↓
-JWT
-      ↓
-SecureStore
-      ↓
-AuthContext
-      ↓
-Home
-```
-
-------------------------------------------------------------------------
-
-# 🔒 Rota privada
-
-Após o login, o aplicativo utiliza o token para acessar recursos
-protegidos.
-
-Se não houver token válido, o usuário não deve acessar a área privada.
-
-------------------------------------------------------------------------
-
-# 🚪 Logout
-
-O logout remove o token armazenado.
-
-Fluxo:
-
-``` text
-Logout
-  ↓
-removeToken()
-  ↓
-usuário desautenticado
-  ↓
-Login
-```
-
-------------------------------------------------------------------------
-
-# 🔁 Recuperação de senha
-
-O aplicativo possui três telas:
-
-``` text
-ForgotPasswordPage
-        ↓
-VerifyCodePage
-        ↓
-ResetPasswordPage
-```
-
-------------------------------------------------------------------------
-
-## 1. Forgot Password
-
-O usuário informa o e-mail.
-
-A aplicação valida localmente:
-
-``` text
-campo vazio?
-    ↓
-email possui formato válido?
-```
-
-Se estiver válido:
-
-``` http
-POST /auth/forgot-password
-```
-
-Body:
-
-``` json
-{
-  "email": "lucas@email.com"
-}
-```
-
-A API gera um código e envia por e-mail.
-
-------------------------------------------------------------------------
-
-## 2. Verify Code
-
-O usuário recebe um código de 6 dígitos.
-
-Exemplo:
-
-``` text
-731204
-```
-
-A tela envia:
-
-``` http
-POST /auth/verify-reset-code
-```
-
-``` json
-{
-  "email": "lucas@email.com",
-  "code": "731204"
-}
-```
-
-Se o código:
-
--   existir;
--   pertencer ao e-mail;
--   não estiver expirado;
-
-o usuário avança para a redefinição de senha.
-
-------------------------------------------------------------------------
-
-## 3. Reset Password
-
-O usuário informa:
-
--   nova senha;
--   confirmação da nova senha.
-
-A aplicação verifica se as senhas são iguais.
-
-Depois envia:
-
-``` http
-POST /auth/reset-password
-```
-
-``` json
-{
-  "email": "lucas@email.com",
-  "code": "731204",
-  "password": "NovaSenha123"
-}
-```
-
-A API valida novamente o código e altera a senha utilizando bcrypt.
-
-Depois disso, o usuário pode voltar ao Login.
-
-------------------------------------------------------------------------
-
-# 🎨 Validação de formulários
-
-O frontend realiza validações para melhorar a experiência do usuário.
-
-Exemplo de e-mail:
-
-``` text
-lucas
-```
-
-Resultado:
-
-``` text
-Please enter a valid email address.
-```
-
-Exemplo de confirmação de senha:
-
-``` text
-Senha:           NovaSenha123
-Confirmação:     NovaSenha456
-```
-
-Resultado:
-
-``` text
-Passwords do not match.
-```
-
-Essas validações não substituem as validações do backend.
-
-------------------------------------------------------------------------
-
-# 🧪 Testando o aplicativo
-
-## Fluxo de cadastro
-
-1.  Abra o aplicativo.
-2.  Acesse Register.
-3.  Informe nome, e-mail e senha.
-4.  Finalize o cadastro.
-5.  Volte para Login.
-
-------------------------------------------------------------------------
-
-## Fluxo de login
-
-1.  Informe e-mail.
-2.  Informe senha.
-3.  Faça login.
-4.  O token será armazenado.
-5.  O usuário será direcionado para Home.
-
-------------------------------------------------------------------------
-
-## Fluxo de recuperação
-
-1.  Na tela de Login, selecione `Forgot password?`.
-2.  Informe um e-mail cadastrado.
-3.  Solicite o código.
-4.  Verifique o e-mail.
-5.  Digite o código de 6 dígitos.
-6.  Crie uma nova senha.
-7.  Volte para Login.
-8.  Entre utilizando a nova senha.
-
-------------------------------------------------------------------------
-
-# 🐛 Problemas comuns
-
-## API não conecta no celular
-
-Se estiver usando um celular físico, não utilize:
-
-``` text
-localhost
-```
-
-Use o IP local da máquina:
-
-``` text
-http://192.168.x.x:8080
-```
-
-Confira também:
-
--   celular e computador na mesma rede;
--   firewall;
--   porta 8080 liberada;
--   API em execução.
-
-------------------------------------------------------------------------
-
-## Android Emulator não acessa localhost
-
-Use:
-
-``` text
-http://10.0.2.2:8080
-```
-
-------------------------------------------------------------------------
-
-## Expo apresenta problemas de cache
-
-Execute:
-
-``` bash
-npx expo start -c
-```
-
-------------------------------------------------------------------------
-
-## Token não persiste
-
-Confira:
-
--   `expo-secure-store` instalado;
--   `storage.ts`;
--   `AuthContext`;
--   logs de `getToken()` e `saveToken()`.
-
-------------------------------------------------------------------------
-
-## Erro de dependências
-
-Execute:
-
-``` bash
-rm -rf node_modules
+```bash
 npm install
 ```
 
-Se o projeto estiver utilizando `package-lock.json`, normalmente é
-preferível:
+---
 
-``` bash
+# 6. ⚙️ Configuração do projeto
+
+Depois de instalar as dependências, crie o `.env` a partir do exemplo.
+
+### Linux/macOS/Git Bash
+
+```bash
+cp .env.example .env
+```
+
+### Windows PowerShell
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Depois edite o `.env`.
+
+Exemplo:
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.0.10:8080
+```
+
+A URL deve apontar para o endereço em que a API está disponível.
+
+---
+
+# 7. 🌐 Configuração da API
+
+O frontend depende do backend.
+
+Antes de executar o aplicativo, a API precisa estar rodando.
+
+## API no mesmo computador
+
+No navegador/ambiente web:
+
+```text
+http://localhost:8080
+```
+
+## Android Emulator
+
+Use:
+
+```env
+EXPO_PUBLIC_API_URL=http://10.0.2.2:8080
+```
+
+O endereço `10.0.2.2` é usado pelo Android Emulator para acessar o `localhost` da máquina hospedeira.
+
+## Celular físico
+
+Descubra o IP local do computador.
+
+### Windows
+
+```powershell
+ipconfig
+```
+
+Procure o **IPv4 Address** do adaptador usado pela rede.
+
+Exemplo:
+
+```text
+192.168.0.10
+```
+
+Então:
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.0.10:8080
+```
+
+### Linux
+
+```bash
+ip addr
+```
+
+ou:
+
+```bash
+hostname -I
+```
+
+Exemplo:
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.0.10:8080
+```
+
+O computador e o celular precisam estar na mesma rede.
+
+> Não use `localhost` no celular físico. Nesse caso, `localhost` aponta para o próprio celular.
+
+---
+
+# 8. ▶️ Executando o aplicativo
+
+Dentro de `frontend/`:
+
+```bash
+npx expo start
+```
+
+O Expo exibirá um QR Code e as opções de execução. A documentação oficial recomenda `npx expo start` para iniciar o servidor de desenvolvimento. citeturn691599search11
+
+Para limpar o cache:
+
+```bash
+npx expo start -c
+```
+
+---
+
+# 9. 📱 Formas de execução
+
+## Expo Go — celular físico
+
+Instale o Expo Go no Android ou iOS.
+
+Depois:
+
+```bash
+npx expo start
+```
+
+Escaneie o QR Code.
+
+Para funcionar pela rede local:
+
+- computador e celular devem estar na mesma rede;
+- a API também precisa ser acessível pelo IP do computador.
+
+A documentação do Expo recomenda o dispositivo físico para um fluxo simples de desenvolvimento. citeturn691599search6
+
+---
+
+## Android Emulator
+
+Instale o Android Studio e configure um dispositivo virtual.
+
+Inicie:
+
+```bash
+npx expo start
+```
+
+Depois pressione:
+
+```text
+a
+```
+
+ou selecione Android no terminal do Expo.
+
+A API, neste caso, normalmente deve usar:
+
+```env
+EXPO_PUBLIC_API_URL=http://10.0.2.2:8080
+```
+
+---
+
+## Web
+
+Para executar no navegador:
+
+```bash
+npx expo start --web
+```
+
+> O comportamento de módulos nativos pode variar no Web. A persistência com Secure Store deve ser validada principalmente no Android/iOS.
+
+---
+
+# 10. 🔐 Fluxos disponíveis
+
+## Cadastro
+
+```text
+Register
+   ↓
+POST /auth/register
+   ↓
+API cria PendingRegistration
+   ↓
+Código de 6 dígitos enviado por e-mail
+   ↓
+VerifyPageRegister
+   ↓
+POST /auth/verify-register
+   ↓
+Código válido?
+   ├── Não → mensagem de erro
+   └── Sim → User criado
+              ↓
+            Login
+```
+
+O código é válido durante a janela definida pela API.
+
+---
+
+## Login
+
+```text
+Login
+  ↓
+POST /auth/login
+  ↓
+Credenciais válidas?
+  ├── Não → Invalid email or password
+  └── Sim → JWT
+              ↓
+        armazenamento
+              ↓
+         AuthContext
+              ↓
+            Home
+```
+
+Para e-mail inexistente e senha incorreta, o frontend utiliza a mesma mensagem de credenciais inválidas.
+
+---
+
+## Recuperação de senha
+
+```text
+Forgot Password
+      ↓
+informa e-mail
+      ↓
+POST /auth/forgot-password
+      ↓
+código enviado por e-mail
+      ↓
+VerifyCodePage
+      ↓
+POST /auth/verify-reset-code
+      ↓
+ResetPasswordPage
+      ↓
+POST /auth/reset-password
+      ↓
+Login
+```
+
+---
+
+# 11. 🔐 Variáveis de ambiente
+
+O frontend usa:
+
+```env
+EXPO_PUBLIC_API_URL=http://IP_DA_API:8080
+```
+
+Não coloque no frontend:
+
+```env
+JWT_SECRET=...
+EMAIL_PASSWORD=...
+DATABASE_URL=...
+```
+
+Segredos pertencem ao backend.
+
+Tudo que é exposto como `EXPO_PUBLIC_*` deve ser tratado como informação pública do aplicativo.
+
+---
+
+# 12. 🛠️ Problemas comuns
+
+## `Unable to connect to the server`
+
+Verifique:
+
+1. A API está rodando?
+2. A URL no `.env` está correta?
+3. O celular e o computador estão na mesma rede?
+4. O firewall do computador está bloqueando a porta?
+5. Você está usando `localhost` em um celular físico?
+
+---
+
+## Android Emulator não acessa a API
+
+Troque:
+
+```env
+EXPO_PUBLIC_API_URL=http://localhost:8080
+```
+
+por:
+
+```env
+EXPO_PUBLIC_API_URL=http://10.0.2.2:8080
+```
+
+---
+
+## Celular físico não acessa a API
+
+Use o IP da máquina:
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.0.10:8080
+```
+
+No Windows, libere a porta 8080 no Firewall caso necessário.
+
+No Linux com UFW:
+
+```bash
+sudo ufw allow 8080/tcp
+```
+
+---
+
+## Variável `EXPO_PUBLIC_API_URL` não atualizou
+
+Reinicie o Expo limpando o cache:
+
+```bash
+npx expo start -c
+```
+
+---
+
+## Erro de dependências
+
+Linux/macOS:
+
+```bash
 rm -rf node_modules
 npm ci
 ```
 
-------------------------------------------------------------------------
+Windows PowerShell:
 
-# 🔐 Segurança
-
-O aplicativo não deve armazenar:
-
--   senha do usuário;
--   App Password do Gmail;
--   JWT_SECRET;
--   credenciais da API.
-
-O token de autenticação é armazenado através do SecureStore no mobile.
-
-As credenciais do e-mail ficam exclusivamente no backend.
-
-------------------------------------------------------------------------
-
-# 🔗 Comunicação entre projetos
-
-O sistema completo possui duas aplicações:
-
-``` text
-┌─────────────────────┐
-│       MOBILE        │
-│ React Native / Expo │
-└──────────┬──────────┘
-           │
-           │ HTTP / JSON
-           ▼
-┌─────────────────────┐
-│         API         │
-│ Node + Express      │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│       SQLite        │
-│       Prisma        │
-└─────────────────────┘
+```powershell
+Remove-Item node_modules -Recurse -Force
+npm ci
 ```
 
-Para recuperação de senha:
+Se não houver `package-lock.json`, use:
 
-``` text
-Mobile
-  ↓
-API
-  ↓
-Prisma / SQLite
-  ↓
-Nodemailer
-  ↓
-Gmail
-  ↓
-E-mail do usuário
+```bash
+npm install
 ```
 
-------------------------------------------------------------------------
+---
 
-# 📋 Checklist para executar o projeto
+## Erros de navegação
 
-## Backend
+Os nomes das rotas precisam coincidir exatamente.
 
--   [ ] Node.js instalado
--   [ ] Repositório clonado
--   [ ] `npm install`
--   [ ] `.env` configurado
--   [ ] App Password do Gmail configurada
--   [ ] Prisma migration executada
--   [ ] Prisma Client gerado
--   [ ] API iniciada na porta 8080
+Exemplo:
 
-## Mobile
+```ts
+navigation.navigate("Login");
+```
 
--   [ ] Node.js instalado
--   [ ] Expo configurado
--   [ ] `npm install`
--   [ ] URL da API configurada
--   [ ] Celular/emulador conectado
--   [ ] `npx expo start`
--   [ ] Aplicativo aberto
+não:
 
-------------------------------------------------------------------------
-
-# 👨‍💻 Autor
-
-Lucas
-
-Projeto desenvolvido para estudo e avaliação técnica.
+```ts
+navigation.navigate("login");
+```
