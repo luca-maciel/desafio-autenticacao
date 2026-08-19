@@ -4,8 +4,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from "react-native";
+
 import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
@@ -18,10 +18,10 @@ import type {
 } from "@react-navigation/native";
 
 import axios from "axios";
+import { Checkbox } from "expo-checkbox";
 
 import { RootStackParamList } from "../types/RoutesTypes";
-import { API_URL } from "../services/api";
-import { Checkbox } from "expo-checkbox";
+import api from "../services/api";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -47,10 +47,16 @@ export default function ResetPasswordPage() {
 
   const [loading, setLoading] = useState(false);
 
-  async function handleResetPassword() {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] =
+    useState("");
+
+  const handleResetPassword = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+
     if (!password || !confirmPassword) {
-      Alert.alert(
-        "Error",
+      setErrorMessage(
         "Please fill in all fields."
       );
 
@@ -58,8 +64,7 @@ export default function ResetPasswordPage() {
     }
 
     if (password !== confirmPassword) {
-      Alert.alert(
-        "Error",
+      setErrorMessage(
         "Passwords do not match."
       );
 
@@ -69,8 +74,8 @@ export default function ResetPasswordPage() {
     try {
       setLoading(true);
 
-      await axios.post(
-        `${API_URL}/auth/reset-password`,
+      const response = await api.post(
+        "/auth/reset-password",
         {
           email,
           code,
@@ -78,27 +83,33 @@ export default function ResetPasswordPage() {
         }
       );
 
-      Alert.alert(
-        "Success",
-        "Your password has been reset successfully.",
-        [
-          {
-            text: "Go to Login",
-            onPress: () =>
-              navigation.navigate("Login"),
-          },
-        ]
+      console.log(
+        "Reset password response:",
+        response.data
       );
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.error ??
-        "Unable to reset password.";
 
-      Alert.alert("Error", message);
+      setSuccessMessage(
+        "Your password has been reset successfully! Redirecting to login..."
+      );
+
+      setTimeout(() => {
+        navigation.navigate("Login");
+      }, 2000);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.error ||
+            "Unable to reset password."
+        );
+      } else {
+        setErrorMessage(
+          "Unable to reset password."
+        );
+      }
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -111,17 +122,40 @@ export default function ResetPasswordPage() {
           Create a new password for your account.
         </Text>
 
+        {errorMessage !== "" && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>
+              {errorMessage}
+            </Text>
+          </View>
+        )}
+
+        {successMessage !== "" && (
+          <View style={styles.successContainer}>
+            <Text style={styles.successText}>
+              {successMessage}
+            </Text>
+          </View>
+        )}
+
         <Text style={styles.label}>
           New password
         </Text>
 
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            errorMessage !== "" &&
+              styles.inputError,
+          ]}
           placeholder="Enter your new password"
           placeholderTextColor="#94A3B8"
           secureTextEntry={!showPassword}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            setErrorMessage("");
+          }}
         />
 
         <Text style={styles.label}>
@@ -129,21 +163,38 @@ export default function ResetPasswordPage() {
         </Text>
 
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            errorMessage !== "" &&
+              styles.inputError,
+          ]}
           placeholder="Confirm your new password"
           placeholderTextColor="#94A3B8"
           secureTextEntry={!showPassword}
           value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          onChangeText={(text) => {
+            setConfirmPassword(text);
+            setErrorMessage("");
+          }}
         />
 
         <View style={styles.showPassword}>
-          <Checkbox onValueChange={()=>{setShowPassword(!showPassword)}} value={showPassword} style={styles.checkbox}/>
-          <Text style={styles.label}>Show passwords</Text>
+          <Checkbox
+            value={showPassword}
+            onValueChange={setShowPassword}
+            style={styles.checkbox}
+          />
+
+          <Text style={styles.showPasswordText}>
+            Show passwords
+          </Text>
         </View>
-        
+
         <TouchableOpacity
-          style={styles.button}
+          style={[
+            styles.button,
+            loading && styles.buttonDisabled,
+          ]}
           onPress={handleResetPassword}
           disabled={loading}
         >
@@ -159,19 +210,6 @@ export default function ResetPasswordPage() {
 }
 
 const styles = StyleSheet.create({
-  checkbox: {
-    margin: 0,
-  },
-  showPassword: {
-    // flex:1,
-    margin: 0,
-    flexDirection:"row",
-    alignItems:"flex-start",
-    justifyContent:"flex-start",
-    marginBottom: 36,
-    gap:10,
-    textAlign:"center",
-  },
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",
@@ -216,6 +254,55 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  inputError: {
+    borderColor: "#EF4444",
+  },
+
+  errorContainer: {
+    backgroundColor: "#FEE2E2",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 18,
+  },
+
+  errorText: {
+    color: "#B91C1C",
+    fontSize: 13,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+
+  successContainer: {
+    backgroundColor: "#DCFCE7",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 18,
+  },
+
+  successText: {
+    color: "#166534",
+    fontSize: 13,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+
+  showPassword: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 36,
+    gap: 10,
+  },
+
+  checkbox: {
+    margin: 0,
+  },
+
+  showPasswordText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#334155",
+  },
+
   button: {
     height: 52,
     borderRadius: 12,
@@ -223,6 +310,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
+  },
+
+  buttonDisabled: {
+    opacity: 0.6,
   },
 
   buttonText: {

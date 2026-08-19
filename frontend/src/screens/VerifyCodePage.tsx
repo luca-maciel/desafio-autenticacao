@@ -4,8 +4,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from "react-native";
+
 import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type {
@@ -16,7 +16,7 @@ import type {
 } from "@react-navigation/native";
 
 import axios from "axios";
-import { API_URL } from "../services/api";
+import api from "../services/api";
 
 import { RootStackParamList } from "../types/RoutesTypes";
 
@@ -39,41 +39,58 @@ export default function VerifyCodePage() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleVerifyCode() {
-    if (code.length !== 6) {
-      Alert.alert(
-        "Invalid code",
-        "Please enter the 6-digit verification code."
-      );
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
+  const handleVerifyCode = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    if (code.length !== 6) {
+      setErrorMessage(
+        "Please enter a 6-digit verification code."
+      );
       return;
     }
 
     try {
       setLoading(true);
 
-      await axios.post(
-        `${API_URL}/auth/verify-reset-code`,
+      const response = await api.post(
+        "/auth/verify-reset-code",
         {
           email,
           code,
         }
       );
 
-      navigation.navigate("ResetPassword", {
-        email,
-        code,
-      });
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.error ??
-        "Invalid verification code.";
+      console.log("Verification response:", response.data);
 
-      Alert.alert("Verification failed", message);
+      setSuccessMessage(
+        "Code verified successfully! Redirecting..."
+      );
+
+      setTimeout(() => {
+        navigation.navigate("ResetPassword", {
+          email,
+          code,
+        });
+      }, 1000);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.error ||
+            "Invalid verification code."
+        );
+      } else {
+        setErrorMessage(
+          "Unable to verify the verification code."
+        );
+      }
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -90,23 +107,51 @@ export default function VerifyCodePage() {
           {email}
         </Text>
 
+        {errorMessage !== "" && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>
+              {errorMessage}
+            </Text>
+          </View>
+        )}
+
+        {successMessage !== "" && (
+          <View style={styles.successContainer}>
+            <Text style={styles.successText}>
+              {successMessage}
+            </Text>
+          </View>
+        )}
+
         <TextInput
-          style={styles.codeInput}
+          style={[
+            styles.codeInput,
+            errorMessage !== "" && styles.inputError,
+          ]}
           placeholder="000000"
           placeholderTextColor="#94A3B8"
-          keyboardType="numbers-and-punctuation"
+          keyboardType="number-pad"
           maxLength={6}
           value={code}
-          onChangeText={setCode}
+          onChangeText={(text) => {
+            setCode(text);
+            setErrorMessage("");
+            setSuccessMessage("");
+          }}
         />
 
         <TouchableOpacity
-          style={styles.button}
+          style={[
+            styles.button,
+            loading && styles.buttonDisabled,
+          ]}
           onPress={handleVerifyCode}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Verifying..." : "Verify Code"}
+            {loading
+              ? "Verifying..."
+              : "Verify Code"}
           </Text>
         </TouchableOpacity>
 
@@ -156,6 +201,34 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 
+  errorContainer: {
+    backgroundColor: "#FEE2E2",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 18,
+  },
+
+  errorText: {
+    color: "#B91C1C",
+    fontSize: 13,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+
+  successContainer: {
+    backgroundColor: "#DCFCE7",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 18,
+  },
+
+  successText: {
+    color: "#166534",
+    fontSize: 13,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+
   codeInput: {
     height: 60,
     borderWidth: 1,
@@ -169,6 +242,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  inputError: {
+    borderColor: "#EF4444",
+  },
+
   button: {
     height: 52,
     borderRadius: 12,
@@ -176,6 +253,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+  },
+
+  buttonDisabled: {
+    opacity: 0.6,
   },
 
   buttonText: {
