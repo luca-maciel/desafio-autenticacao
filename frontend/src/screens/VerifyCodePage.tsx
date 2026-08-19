@@ -16,7 +16,7 @@ import type {
 } from "@react-navigation/native";
 
 import axios from "axios";
-import API_URL from "../services/api";
+import { API_URL } from "../services/api";
 
 import { RootStackParamList } from "../types/RoutesTypes";
 
@@ -94,7 +94,7 @@ export default function VerifyCodePage() {
           style={styles.codeInput}
           placeholder="000000"
           placeholderTextColor="#94A3B8"
-          keyboardType="number-pad"
+          keyboardType="numbers-and-punctuation"
           maxLength={6}
           value={code}
           onChangeText={setCode}

@@ -52,8 +52,6 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password);
     } catch (error: any) {
-      console.error("LOGIN ERROR:", error);
-
       if (error.response?.status === 401) {
         setServerError("Invalid email or password.");
       } else {

@@ -21,6 +21,7 @@ import axios from "axios";
 
 import { RootStackParamList } from "../types/RoutesTypes";
 import { API_URL } from "../services/api";
+import { Checkbox } from "expo-checkbox";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -37,6 +38,8 @@ export default function ResetPasswordPage() {
   const route = useRoute<RouteProps>();
 
   const { email, code } = route.params;
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] =
@@ -116,7 +119,7 @@ export default function ResetPasswordPage() {
           style={styles.input}
           placeholder="Enter your new password"
           placeholderTextColor="#94A3B8"
-          secureTextEntry
+          secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
         />
@@ -129,11 +132,16 @@ export default function ResetPasswordPage() {
           style={styles.input}
           placeholder="Confirm your new password"
           placeholderTextColor="#94A3B8"
-          secureTextEntry
+          secureTextEntry={!showPassword}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
 
+        <View style={styles.showPassword}>
+          <Checkbox onValueChange={()=>{setShowPassword(!showPassword)}} value={showPassword} style={styles.checkbox}/>
+          <Text style={styles.label}>Show passwords</Text>
+        </View>
+        
         <TouchableOpacity
           style={styles.button}
           onPress={handleResetPassword}
@@ -151,6 +159,19 @@ export default function ResetPasswordPage() {
 }
 
 const styles = StyleSheet.create({
+  checkbox: {
+    margin: 0,
+  },
+  showPassword: {
+    // flex:1,
+    margin: 0,
+    flexDirection:"row",
+    alignItems:"flex-start",
+    justifyContent:"flex-start",
+    marginBottom: 36,
+    gap:10,
+    textAlign:"center",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",

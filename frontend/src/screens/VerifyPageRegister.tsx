@@ -29,48 +29,47 @@ export default function VerifyPageRegister({ navigation, route }: any) {
       return;
     }
 
-    const handleVerify = async () => {
-      setErrorMessage("");
-      setSuccessMessage("");
+    try {
+      setLoading(true);
 
-      if (code.length !== 6) {
-        setErrorMessage("Please enter a 6-digit verification code.");
-        return;
-      }
+      const response = await api.post("/auth/verify-register", {
+        email,
+        code,
+      });
 
-      try {
-        setLoading(true);
+      console.log("Verification response:", response.data);
 
-        const response = await api.post("/auth/verify-register", {
-          email,
-          code,
-        });
+      setSuccessMessage(
+        "Registration completed successfully! Redirecting to login...",
+      );
 
-        setSuccessMessage(
-          "Registration completed successfully! Redirecting to login...",
+      setTimeout(() => {
+        navigation.navigate("Login");
+      }, 2000);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message || "Invalid verification code.",
         );
-
-        setTimeout(() => {
-          navigation.navigate("Login");
-        }, 2000);
-      } catch (error: any) {
-        if (axios.isAxiosError(error)) {
-          setErrorMessage(
-            error.response?.data?.message || "Invalid verification code.",
-          );
-        } else {
-          setErrorMessage("Unable to verify the code.");
-        }
-      } finally {
-        setLoading(false);
+      } else {
+        setErrorMessage("Unable to verify the code.");
       }
-    };
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.form}>
-        <Text style={styles.title}>Verify your email</Text>
+        <Text
+          style={styles.title}
+          onPress={() => {
+            Keyboard.dismiss();
+          }}
+        >
+          Verify your email
+        </Text>
 
         <Text style={styles.description}>
           We sent a 6-digit verification code to:
@@ -97,7 +96,7 @@ export default function VerifyPageRegister({ navigation, route }: any) {
             style={[styles.input, errorMessage !== "" && styles.inputError]}
             placeholder="Enter your 6-digit code"
             placeholderTextColor="#9ca3af"
-            keyboardType="number-pad"
+            keyboardType="numbers-and-punctuation"
             maxLength={6}
             value={code}
             onChangeText={(text) => {
