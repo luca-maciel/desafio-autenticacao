@@ -131,7 +131,7 @@ npm --version
 git --version
 ```
 
-Use uma versão LTS do Node.js. O site oficial atualmente disponibiliza a série 24.x como LTS. citeturn691599search4
+Use uma versão LTS do Node.js. O site oficial atualmente disponibiliza a série 24.x como LTS. 
 
 ---
 
@@ -311,8 +311,6 @@ Exemplo:
 EMAIL_USER="seuemail@gmail.com"
 EMAIL_PASSWORD="abcdefghijklmnop"
 ```
-
-Não coloque espaços na App Password.
 
 ### Erro `535-5.7.8`
 

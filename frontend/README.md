@@ -47,7 +47,7 @@ O aplicativo consome a API REST do backend e implementa os principais fluxos de 
 | Expo Secure Store | Armazenamento do token em ambiente nativo |
 | Context API | Estado global de autenticação |
 
-O projeto utiliza Expo. Para desenvolvimento com Expo, a documentação oficial recomenda Node.js LTS e suporta Windows e Linux. citeturn691599search0turn691599search6
+O projeto utiliza Expo. Para desenvolvimento com Expo, a documentação oficial recomenda Node.js LTS e suporta Windows e Linux.
 
 ---
 
@@ -115,7 +115,7 @@ npm --version
 git --version
 ```
 
-No momento desta documentação, o site oficial do Node.js disponibiliza a linha **24.x como LTS**. Use uma versão LTS compatível com o projeto em vez de depender de uma versão Current. citeturn691599search4
+No momento desta documentação, o site oficial do Node.js disponibiliza a linha **24.x como LTS**. Use uma versão LTS compatível com o projeto em vez de depender de uma versão Current.
 
 ---
 
@@ -230,7 +230,7 @@ node --version
 npm --version
 ```
 
-O Node oficial também documenta a utilização do nvm no Linux. citeturn691599search4
+O Node oficial também documenta a utilização do nvm no Linux.
 
 ---
 
@@ -273,7 +273,7 @@ Depois edite o `.env`.
 Exemplo:
 
 ```env
-EXPO_PUBLIC_API_URL=http://192.168.0.10:8080
+EXPO_PUBLIC_API_URL=http://IP_API:8080
 ```
 
 A URL deve apontar para o endereço em que a API está disponível.
@@ -299,10 +299,8 @@ http://localhost:8080
 Use:
 
 ```env
-EXPO_PUBLIC_API_URL=http://10.0.2.2:8080
+EXPO_PUBLIC_API_URL=http://IP_API:8080
 ```
-
-O endereço `10.0.2.2` é usado pelo Android Emulator para acessar o `localhost` da máquina hospedeira.
 
 ## Celular físico
 
@@ -360,7 +358,7 @@ Dentro de `frontend/`:
 npx expo start
 ```
 
-O Expo exibirá um QR Code e as opções de execução. A documentação oficial recomenda `npx expo start` para iniciar o servidor de desenvolvimento. citeturn691599search11
+O Expo exibirá um QR Code e as opções de execução. A documentação oficial recomenda `npx expo start` para iniciar o servidor de desenvolvimento. 
 
 Para limpar o cache:
 
@@ -389,7 +387,7 @@ Para funcionar pela rede local:
 - computador e celular devem estar na mesma rede;
 - a API também precisa ser acessível pelo IP do computador.
 
-A documentação do Expo recomenda o dispositivo físico para um fluxo simples de desenvolvimento. citeturn691599search6
+A documentação do Expo recomenda o dispositivo físico para um fluxo simples de desenvolvimento. 
 
 ---
 
@@ -414,7 +412,7 @@ ou selecione Android no terminal do Expo.
 A API, neste caso, normalmente deve usar:
 
 ```env
-EXPO_PUBLIC_API_URL=http://10.0.2.2:8080
+EXPO_PUBLIC_API_URL=http://IP_API:8080
 ```
 
 ---
@@ -552,7 +550,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080
 por:
 
 ```env
-EXPO_PUBLIC_API_URL=http://10.0.2.2:8080
+EXPO_PUBLIC_API_URL=http://IP_API:8080
 ```
 
 ---
