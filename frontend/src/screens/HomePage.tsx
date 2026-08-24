@@ -24,18 +24,6 @@ export default function HomePage() {
           <Text style={styles.value}> {user?.email} </Text>
         </View>
       </View>
-      <View style={styles.authCard}>
-        
-        <Text style={styles.authIcon}> 🔐 </Text>
-        <View style={styles.authContent}>
-          
-          <Text style={styles.authTitle}> You're securely signed in </Text>
-          <Text style={styles.authDescription}>
-            
-            Your session is protected with JWT authentication.
-          </Text>
-        </View>
-      </View>
       <TouchableOpacity style={styles.logoutButton} onPress={logout}>
         
         <Text style={styles.logoutText}> Sign out </Text>
